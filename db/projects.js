@@ -10,7 +10,7 @@ const project = {
       data: {
         title: {
           content: 'Welcome to our shop',
-          color: '#e54',
+          color: '#266e9a',
           size: 48
         },
         text: {
@@ -18,7 +18,7 @@ const project = {
           color: null,
           size: 18
         },
-        bgColor: '#5cf',
+        bgColor: '#95daee',
         image: 'https://plus.unsplash.com/premium_photo-1680497811614-4f93025d7e57?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1065&q=80',
         variants: 1,
       }
