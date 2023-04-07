@@ -8,12 +8,18 @@ const project = {
       id: shortid.generate(),
       name: 'hero',
       data: {
-        title: 'Welcome to our shop',
-        titleColor: null,
-        text: 'Lorem ipsum dolor sit amet consectetur adipiscing elit Ut et massa mi. Aliquam in hendrerit urna.',
-        textColor: null,
+        title: {
+          content: 'Welcome to our shop',
+          color: '#e54',
+          size: 48
+        },
+        text: {
+          content: 'Lorem ipsum dolor sit amet consectetur adipiscing elit Ut et massa mi. Aliquam in hendrerit urna.',
+          color: null,
+          size: 18
+        },
         bgColor: '#5cf',
-        image: null,
+        image: 'https://plus.unsplash.com/premium_photo-1680497811614-4f93025d7e57?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1065&q=80',
         variants: 1,
       }
     },
