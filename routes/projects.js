@@ -42,31 +42,28 @@ const createNew = (req, res) => {
   res.send({...newItem, ...expanded})
 }
 
-const updateItem = (req, res) => {
-  const { id } = req.params
-  const { name, blocks } = req.body
-  const permisbleKeys = 'name, blocks'.split(', ')
+const allowedDataProps = {
+  hero: ['title', 'text', 'bgColor', 'image', 'variant'],
+  features: 'bgColor titleColor textColor items'.split(' ')
+}
 
-  const item = db.get('projects').find({ id }).value()
-  const item_expanded = db.get('projects_expanded').find({ id }).value()
-  if (!item || !item_expanded) return error(res, 404, 'cannot find project with this id')
+const updateBlock = (req, res) => {
+  const { projectId, blockId } = req.params
+  const project = db.get('projects_expanded').find({ id: projectId })
+  const block = project.get('blocks').find({ id: blockId }).get('data')
+  const blockName = project.get('blocks').find({ id: blockId }).get('name')
 
-  const checkError = checkKey(permisbleKeys, req)
-  if (checkError) return error(res, 400, checkError)
+  if (!project) return error(res, 404, 'cannot find project with this id')
+  if (!block.value()) return error(res, 404, 'cannot find project block with this id')
 
-  if (name && typeof name !== 'string') return error(res, 400, errorTexts.type('name', 'string'))
-  if (blocks && !Array.isArray(blocks)) {
-    return error(res, 400,  errorTexts.type('blocks', 'array'))
-  }
+  const invalidDataProps = Object.keys(req.body)
+    .filter(prop => !allowedDataProps[blockName].includes(prop))
 
-  const updatedItem = { ...item_expanded, ...req.body }
-  const not_expanded = Object.assign({}, updatedItem)
-  delete not_expanded['blocks']
+  if (invalidDataProps.length) return error(res, 400, `Invalid data properties: ${invalidDataProps.join(', ')}`);
 
-  db.get('projects').find({ id }).assign(not_expanded).write()
-  db.get('projects_expanded').find({ id }).assign(updatedItem).write()
+  block.assign({ ...block.value(), ...req.body  }).write()
 
-  res.send(updatedItem)
+  return res.status(200).send('Block updated successfully')
 }
 
 const deleteItem = (req, res) => {
@@ -88,6 +85,6 @@ module.exports = {
   getAll,
   getItem,
   createNew,
-  updateItem,
+  updateBlock,
   deleteItem
 }
