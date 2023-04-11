@@ -19,6 +19,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "fastest-validator": "^1.16.0",
     "lorem-ipsum": "^2.0.8",
     "lowdb": "^1.0.0",
     "nodemon": "^2.0.6",

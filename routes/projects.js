@@ -1,6 +1,9 @@
 const db = require('../db')
 const shortid = require('shortid')
+const Validator = require("fastest-validator");
+
 const { error, errorTexts } = require('../utils/utils.js')
+const v = new Validator();
 
 const getAll = (_, res) => {
   const projects = db.get('projects')
@@ -47,20 +50,33 @@ const allowedDataProps = {
   features: 'bgColor titleColor textColor items'.split(' ')
 }
 
-const updateBlock = (req, res) => {
+const textSchema = {
+  $$type: "object|optional",
+  content: { type: "string" },
+  color: { type: "string" },
+  size:  { type: "number", min: 8, max: 200 },
+}
+const schema = {
+  title: textSchema,
+  text: textSchema, 
+  bgColor: { type: "string", optional: true },
+  image: { type: "string", optional: true },
+  variant: { type: "number", min: 1, max: 5,  optional: true },
+}
+const checkHero = v.compile(schema);
+
+const updateHeroBlock = (req, res) => {
   const { projectId, blockId } = req.params
   const project = db.get('projects_expanded').find({ id: projectId })
   const block = project.get('blocks').find({ id: blockId }).get('data')
-  const blockName = project.get('blocks').find({ id: blockId }).get('name')
 
   if (!project) return error(res, 404, 'cannot find project with this id')
   if (!block.value()) return error(res, 404, 'cannot find project block with this id')
 
-  const invalidDataProps = Object.keys(req.body)
-    .filter(prop => !allowedDataProps[blockName].includes(prop))
-
-  if (invalidDataProps.length) return error(res, 400, `Invalid data properties: ${invalidDataProps.join(', ')}`);
-
+  if (checkHero(req.body)?.length > 0) {
+    return error(res, 404, 'invalid body value')
+  }
+  
   block.assign({ ...block.value(), ...req.body  }).write()
 
   return res.status(200).send('Block updated successfully')
@@ -85,6 +101,6 @@ module.exports = {
   getAll,
   getItem,
   createNew,
-  updateBlock,
+  updateHeroBlock,
   deleteItem
 }
